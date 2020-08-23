@@ -46,6 +46,14 @@ use tokio::{
     },
 };
 
+use tracing_subscriber::{
+    fmt::Subscriber as TracingSubscriber,
+    EnvFilter as TracingEnvFilter,
+};
+
+#[allow(dead_code)]
+mod built_info;
+
 #[derive(Debug, Deserialize)]
 struct Settings {
     #[serde(default = "Settings::default_status_probe_addr")]
@@ -59,6 +67,19 @@ impl Settings {
             .parse()
             .expect("default status probe address")
     }
+}
+
+fn version() -> String {
+    format!(
+        "{} {} ({}, {} build, {} [{}], {})",
+        env!("CARGO_PKG_NAME"),
+        env!("CARGO_PKG_VERSION"),
+        built_info::GIT_VERSION.unwrap_or("unknown"),
+        built_info::PROFILE,
+        built_info::CFG_OS,
+        built_info::CFG_TARGET_ARCH,
+        built_info::BUILT_TIME_UTC,
+    )
 }
 
 #[tokio::main]
@@ -160,7 +181,12 @@ async fn run(settings: Settings) -> Result<(), Box<dyn std::error::Error>> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    pretty_env_logger::init();
+    TracingSubscriber::builder()
+        .with_env_filter(TracingEnvFilter::from_default_env())
+        .json()
+        .init();
+
+    info!("{}", version());
 
     let mut settings = Config::new();
     settings.merge(Environment::new())?;

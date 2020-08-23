@@ -9,11 +9,22 @@ anyhow = "1.0"
 config = "0.10"
 futures = "0.3"
 log = "0.4"
-pretty_env_logger = "0.4"
 rusoto_core = "0.45"
 rusoto_credential = "0.45"
 rusoto_sts = "0.45"
 rusoto_sqs = "0.45"
 serde = { version = "1.0", features = ["derive"] }
-thiserror = "1.0"
 tokio = { version = "0.2", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.2", features = ["json"] }
+
+[build-dependencies]
+built = { version = "0.4", features = ["chrono", "git2"] }
+
+[features]
+default = ["log-level-info"]
+
+# Set only one of these
+log-level-info = ["log/release_max_level_info"]
+log-level-debug = ["log/release_max_level_debug"]
+log-level-trace = ["log/release_max_level_trace"]

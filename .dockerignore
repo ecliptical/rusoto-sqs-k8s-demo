@@ -1,0 +1,10 @@
+# Default deny
+*
+
+# Allow specific files
+!.git/
+!.gitignore
+!.rustfmt.toml
+!Cargo.*
+!build.rs
+!src/
