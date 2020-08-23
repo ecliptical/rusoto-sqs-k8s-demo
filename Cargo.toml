@@ -1,0 +1,19 @@
+[package]
+name = "rusoto-sqs-k8s-demo"
+version = "0.1.0"
+authors = ["Peter Nehrer <pnehrer@eclipticalsoftware.com>"]
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0"
+config = "0.10"
+futures = "0.3"
+log = "0.4"
+pretty_env_logger = "0.4"
+rusoto_core = "0.45"
+rusoto_credential = "0.45"
+rusoto_sts = "0.45"
+rusoto_sqs = "0.45"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
+tokio = { version = "0.2", features = ["full"] }
