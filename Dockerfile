@@ -14,7 +14,6 @@ ENV BUILD_FEATURES=${debug:+"--features log-level-trace"}
 
 RUN cargo build --release --no-default-features $BUILD_FEATURES
 
-# Copy stage
 FROM alpine:latest
 RUN apk --no-cache add tini && \
     addgroup -g 1000 appuser && \
@@ -22,10 +21,8 @@ RUN apk --no-cache add tini && \
 USER appuser
 COPY --from=build /home/rust/src/target/x86_64-unknown-linux-musl/release/rusoto-sqs-k8s-demo /app/
 
-# Setup the environment
 ENTRYPOINT ["/sbin/tini", "--"]
 
-# Runtime
 ENV RUST_BACKTRACE=1
 ENV RUST_LOG=debug
 

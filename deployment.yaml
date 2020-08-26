@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rusoto-sqs-k8s-demo
+  namespace: demo
+  labels:
+    app.kubernetes.io/name: rusoto-sqs-k8s-demo
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rusoto-sqs-k8s-demo
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rusoto-sqs-k8s-demo
+    spec:
+      containers:
+        - name: rusoto-sqs-k8s-demo
+          image: "docker.pkg.github.com/ecliptical/rusoto-sqs-k8s-demo/rusoto-sqs-k8s-demo:v1"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: status
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: status
+          readinessProbe:
+            tcpSocket:
+              port: status
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          env:
+          - name: "AWS_REGION"
+            value: ca-central-1
+          - name: "QUEUE_URL"
+            valueFrom:
+                secretKeyRef:
+                  name: rusoto-sqs-k8s-demo-secrets
+                  key: queue_url
+          - name: "RUST_LOG"
+            value: info
+      serviceAccountName: rusoto-sqs-consumer
+      securityContext:
+        fsGroup: 65534
+      imagePullSecrets:
+        - name: regsecret

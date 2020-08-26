@@ -44,6 +44,10 @@ use tokio::{
         signal,
         SignalKind,
     },
+    time::{
+        delay_for,
+        Duration,
+    },
 };
 
 use tracing_subscriber::{
@@ -97,7 +101,7 @@ async fn run(settings: Settings) -> Result<(), Box<dyn std::error::Error>> {
             AwsClient::new_with(cred_provider, sqs_http)
         };
 
-    let client = SqsClient::new_with_client(aws_client.clone(), Region::default());
+    let client = SqsClient::new_with_client(aws_client, Region::default());
 
     let queue_url = settings.queue_url;
     let rcv = ReceiveMessageRequest {
@@ -165,6 +169,7 @@ async fn run(settings: Settings) -> Result<(), Box<dyn std::error::Error>> {
             res = queue.try_next() => {
                 if let Err(e) = res {
                     error!("Error processing queued messages: {:?}", e);
+                    delay_for(Duration::from_secs(5)).await;
                 }
             }
 
